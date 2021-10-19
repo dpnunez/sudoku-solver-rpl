@@ -7,7 +7,7 @@ void leSudoku(sudoku *game) {
   FILE *fp;
   char ch;
 	bool primeiro = true;
-  int parsedNumber;
+  int parsedNumber, index=0;
 	
   fp = fopen("game1.txt", "r");
 
@@ -23,8 +23,9 @@ void leSudoku(sudoku *game) {
     // Verifica se o caractere lido é numério
     if(ch-'0' >= 0 && ch-'0' <= 9){
       parsedNumber = ch-'0';
-			inserirCelula(game, parsedNumber, primeiro);
+			inserirCelula(game, parsedNumber, primeiro, index);
 			primeiro = false;
+      index++;
     }
   }
 
@@ -34,12 +35,13 @@ void leSudoku(sudoku *game) {
   }
 }
 
-void inserirCelula(sudoku *game, int valor, bool primeiro) {
+void inserirCelula(sudoku *game, int valor, bool primeiro, int index) {
 	celula *novaCelula;
 	novaCelula = (celula *)malloc(sizeof(celula));
 	novaCelula->valor=valor;
 	novaCelula->proximo=NULL;
 	novaCelula->anterior=game->fim;
+  novaCelula->index=index;
 
 	if (primeiro) {
 		game->inicio=novaCelula;
@@ -84,10 +86,26 @@ void resolveGame(sudoku *game) {
 		i++;
 		atual=atual->proximo;
   }
-  
-	printf("Resolve celula");
+
+
+  resolveCelula(game, coordenadasFixas, game->inicio);
 }
 
-void resolveCelula(sudoku *game, int position) {
-	printf("resolve celula");
+void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
+  int tentativa;
+  
+  while(posicaoPreenchida[atual->index])
+    atual=atual->proximo;
+
+  tentativa = atual->valor + 1;
+
+  // verifica se a tentativa é maior que 9;
+  // verifica se a tentativa atende as regras;
+
+  atual->valor=tentativa;
+
+  // verifica se terminou
+
+  // computa o proximo
+  
 };
