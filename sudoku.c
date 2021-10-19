@@ -93,7 +93,7 @@ void resolveGame(sudoku *game) {
 
 void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
   int tentativa;
-  
+
   while(posicaoPreenchida[atual->index])
     atual=atual->proximo;
 
@@ -101,11 +101,82 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
 
   // verifica se a tentativa é maior que 9;
   // verifica se a tentativa atende as regras;
+  while(!verificaValidade(tentativa, game, atual)) {
+    printf("tentativa : %d é invalida", tentativa);
+  }
 
   atual->valor=tentativa;
 
   // verifica se terminou
 
   // computa o proximo
-  
 };
+
+bool verificaValidade(int tentativa, sudoku *game, celula *atual) {
+  int i;
+
+  if(tentativa == 0)
+    return true;
+
+  //printf("Tentativa a ser inserida: %d\n", valorInserido);
+  //getchar();
+
+  // verifica linha
+  int linha = atual->index/9;
+  for(int i = linha * 9 ; i < linha * 9 + 9 ; i++) {
+    if(buscaPorIndex(i, game)->valor == tentativa) {
+      //printf("VIOLACAO DE LINHA: posicao %d.\n", i);
+      return false;
+    }
+  }
+
+  // verifica coluna
+   int coluna = atual->index % 9;
+    for(int i = coluna % 9 ; i <= 8 * 9 + coluna % 9 ; i+=9)
+    {
+        if(buscaPorIndex(i, game)->valor == tentativa) {
+            //printf("VIOLACAO DE COLUNA: posicao %d.\n", i);
+            //getchar();
+            return false;
+        }
+    }
+
+  // verifica subjogo
+
+  int submatrizX, submatrizY, y, x;
+    if(linha < 3)
+        submatrizY = 0;
+    else if(linha >= 3 && linha < 6)
+        submatrizY = 1;
+    else if(linha >= 6)
+        submatrizY = 2;
+
+    if(coluna < 3)
+        submatrizX = 0;
+    else if(coluna >= 3 && coluna < 6)
+        submatrizX = 1;
+    else if(coluna >= 6)
+        submatrizX = 2;
+
+    for(y = 0 ; y < 3 ; y++)
+      for(x = 0 ; x < 3 ; x++) {
+          int pos = (x + submatrizX * 3) + ((y * 9) + (submatrizY * 9 * 3));
+          if(buscaPorIndex(pos, game)->valor == tentativa) {
+              // printf("VIOLACAO DE SUBMATRIZ: posicao %d.\n", pos);
+              //getchar();
+              return false;
+          }
+      }
+
+  return true;
+}
+
+
+celula *buscaPorIndex(int index, sudoku *game) {
+  celula *atual;
+  atual=game->inicio;
+  while(atual->index != index)
+    atual=atual->proximo;
+  
+  return atual;
+}

@@ -22,3 +22,5 @@ void inicializaLista(sudoku *game);
 void imprimeGame(sudoku *game);
 void resolveGame(sudoku *game);
 void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual);
+bool verificaValidade(int tentativa, sudoku *game, celula *atual);
+celula *buscaPorIndex(int index, sudoku *game);
