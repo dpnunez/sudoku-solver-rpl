@@ -19,3 +19,5 @@ void leSudoku(sudoku *game);
 void inserirCelula(sudoku *game, int valor, bool primeiro);
 void inicializaLista(sudoku *game);
 void imprimeGame(sudoku *game);
+void resolveGame(sudoku *game);
+void resolveCelula(sudoku *game, int position);

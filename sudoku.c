@@ -66,3 +66,28 @@ void imprimeGame(sudoku *game) {
 		atual=atual->proximo;
 	}
 }
+
+void resolveGame(sudoku *game) {
+  bool coordenadasFixas[81];
+  int i=0;
+  celula *atual;
+
+  atual=game->inicio;
+
+  while(atual->proximo != NULL) {
+    if(atual->valor != 0) {
+			coordenadasFixas[i]=true;
+    }
+		else {
+			coordenadasFixas[i]=false;
+    }
+		i++;
+		atual=atual->proximo;
+  }
+  
+	printf("Resolve celula");
+}
+
+void resolveCelula(sudoku *game, int position) {
+	printf("resolve celula");
+};
