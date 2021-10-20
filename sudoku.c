@@ -60,13 +60,16 @@ void inicializaLista(sudoku *game) {
 }
 
 void imprimeGame(sudoku *game) {
+  int i, j;
 	celula *atual;
 	atual=game->inicio;
 
-	while(atual->proximo != NULL) {
-		printf("%d ", atual->valor);
-		atual=atual->proximo;
-	}
+
+  for(int linha = 0 ; linha < 9 ; linha++) {
+        for(int coluna = 0 ; coluna < 9 ; coluna++, atual=atual->proximo)
+            printf("%d ", atual->valor);
+        printf("\n");
+    }
 }
 
 void resolveGame(sudoku *game) {
@@ -100,16 +103,32 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
   tentativa = atual->valor + 1;
 
   // verifica se a tentativa é maior que 9;
+  if(tentativa > 9) {
+    backtracking(game, posicaoPreenchida, atual);
+    tentativa=1;
+  }
+
   // verifica se a tentativa atende as regras;
   while(!verificaValidade(tentativa, game, atual)) {
-    printf("tentativa : %d é invalida", tentativa);
+    tentativa++;
+    if(tentativa > 9) {
+      backtracking(game, posicaoPreenchida, atual);
+      tentativa=1;
+    }
   }
 
   atual->valor=tentativa;
 
+
   // verifica se terminou
 
+  if(verificaSeTerminou(game)) {
+    imprimeGame(game);
+    exit(0);
+  }
+
   // computa o proximo
+  resolveCelula(game, posicaoPreenchida, atual->proximo);
 };
 
 bool verificaValidade(int tentativa, sudoku *game, celula *atual) {
@@ -150,7 +169,7 @@ bool verificaValidade(int tentativa, sudoku *game, celula *atual) {
         submatrizY = 1;
     else if(linha >= 6)
         submatrizY = 2;
-
+        
     if(coluna < 3)
         submatrizX = 0;
     else if(coluna >= 3 && coluna < 6)
@@ -179,4 +198,27 @@ celula *buscaPorIndex(int index, sudoku *game) {
     atual=atual->proximo;
   
   return atual;
+}
+
+void backtracking(sudoku *game, bool *posicaoPreenchida, celula *atual) {
+  atual->valor=0;
+  atual=atual->anterior;
+
+
+
+  while(posicaoPreenchida[atual->index] == true)
+    atual=atual->anterior;
+
+  // printf("")  
+
+  resolveCelula(game, posicaoPreenchida, atual);  
+}
+
+bool verificaSeTerminou(sudoku *game) {
+    celula *atual;
+    atual=game->inicio;
+    for(int i = 0 ; i < 81 ; i++, atual=atual->proximo)
+        if(atual->valor == 0)
+            return false;
+    return true;
 }
