@@ -66,10 +66,11 @@ void imprimeGame(sudoku *game) {
 
 
   for(int linha = 0 ; linha < 9 ; linha++) {
-        for(int coluna = 0 ; coluna < 9 ; coluna++, atual=atual->proximo)
-            printf("%d ", atual->valor);
-        printf("\n");
-    }
+      for(int coluna = 0 ; coluna < 9 ; coluna++, atual=atual->proximo)
+          printf("%d ", atual->valor);
+      printf("\n");
+  }
+  printf("\n\n");
 }
 
 void resolveGame(sudoku *game) {
@@ -110,6 +111,11 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
 
   // verifica se a tentativa atende as regras;
   while(!verificaValidade(tentativa, game, atual)) {
+
+    atual->valor=tentativa;
+    imprimeGame(game);
+    atual->valor=0;
+    
     tentativa++;
     if(tentativa > 9) {
       backtracking(game, posicaoPreenchida, atual);
@@ -119,7 +125,7 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
 
   atual->valor=tentativa;
 
-
+  imprimeGame(game);
   // verifica se terminou
 
   if(verificaSeTerminou(game)) {
