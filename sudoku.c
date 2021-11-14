@@ -1,7 +1,7 @@
-#include "sudoku.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "sudoku.h"
 
 void leSudoku(sudoku *game) {
   FILE *fp;
@@ -13,7 +13,7 @@ void leSudoku(sudoku *game) {
 
   // Validaçao de leitura;
   if(fp == NULL) {
-    printf("Error while opening the file");
+    printf("Erro na leitura");
     exit(1);
   }
 
@@ -66,9 +66,15 @@ void imprimeGame(sudoku *game) {
 
 
   for(int linha = 0 ; linha < 9 ; linha++) {
-      for(int coluna = 0 ; coluna < 9 ; coluna++, atual=atual->proximo)
-          printf("%d ", atual->valor);
-      printf("\n");
+    for(int coluna = 0 ; coluna < 9 ; coluna++, atual=atual->proximo) {
+      if(coluna==2 || coluna==5) {
+        printf("%d  ", atual->valor);
+      } else {
+        printf("%d ", atual->valor);
+      }
+    }
+    if(linha==2 || linha==5) printf("\n");
+    printf("\n");
   }
   printf("\n\n");
 }
@@ -111,12 +117,9 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
 
   // verifica se a tentativa atende as regras;
   while(!verificaValidade(tentativa, game, atual)) {
-
-    atual->valor=tentativa;
-    imprimeGame(game);
-    atual->valor=0;
-    
+    // Debug
     tentativa++;
+
     if(tentativa > 9) {
       backtracking(game, posicaoPreenchida, atual);
       tentativa=1;
@@ -125,9 +128,8 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
 
   atual->valor=tentativa;
 
-  imprimeGame(game);
-  // verifica se terminou
 
+  // verifica se terminou
   if(verificaSeTerminou(game)) {
     imprimeGame(game);
     exit(0);
@@ -137,20 +139,18 @@ void resolveCelula(sudoku *game, bool *posicaoPreenchida, celula *atual) {
   resolveCelula(game, posicaoPreenchida, atual->proximo);
 };
 
+
 bool verificaValidade(int tentativa, sudoku *game, celula *atual) {
   int i;
 
   if(tentativa == 0)
     return true;
 
-  //printf("Tentativa a ser inserida: %d\n", valorInserido);
-  //getchar();
 
-  // verifica linha
+  // verifica linha 
   int linha = atual->index/9;
   for(int i = linha * 9 ; i < linha * 9 + 9 ; i++) {
     if(buscaPorIndex(i, game)->valor == tentativa) {
-      //printf("VIOLACAO DE LINHA: posicao %d.\n", i);
       return false;
     }
   }
@@ -160,14 +160,11 @@ bool verificaValidade(int tentativa, sudoku *game, celula *atual) {
     for(int i = coluna % 9 ; i <= 8 * 9 + coluna % 9 ; i+=9)
     {
         if(buscaPorIndex(i, game)->valor == tentativa) {
-            //printf("VIOLACAO DE COLUNA: posicao %d.\n", i);
-            //getchar();
             return false;
         }
     }
 
   // verifica subjogo
-
   int submatrizX, submatrizY, y, x;
     if(linha < 3)
         submatrizY = 0;
@@ -187,8 +184,6 @@ bool verificaValidade(int tentativa, sudoku *game, celula *atual) {
       for(x = 0 ; x < 3 ; x++) {
           int pos = (x + submatrizX * 3) + ((y * 9) + (submatrizY * 9 * 3));
           if(buscaPorIndex(pos, game)->valor == tentativa) {
-              // printf("VIOLACAO DE SUBMATRIZ: posicao %d.\n", pos);
-              //getchar();
               return false;
           }
       }
@@ -210,12 +205,8 @@ void backtracking(sudoku *game, bool *posicaoPreenchida, celula *atual) {
   atual->valor=0;
   atual=atual->anterior;
 
-
-
   while(posicaoPreenchida[atual->index] == true)
     atual=atual->anterior;
-
-  // printf("")  
 
   resolveCelula(game, posicaoPreenchida, atual);  
 }
